@@ -29,24 +29,25 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Gradle 8.2
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.2"
 
-      - name: Download offline English speech model
+      - name: Download and package offline model
         run: |
           mkdir -p app/src/main/assets
           curl -L --fail --retry 3 \
             https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip \
             -o /tmp/vosk-model.zip
-          mkdir -p /tmp/vosk-model
-          unzip -q /tmp/vosk-model.zip -d /tmp/vosk-model
-          mkdir -p app/src/main/assets/model
-          cp -a /tmp/vosk-model/vosk-model-small-en-us-0.15/. \
-            app/src/main/assets/model/
-          test -f app/src/main/assets/model/conf/model.conf
-          echo "Offline model files verified."
+          mkdir -p /tmp/vosk-download
+          unzip -q /tmp/vosk-model.zip -d /tmp/vosk-download
+          cd /tmp/vosk-download/vosk-model-small-en-us-0.15
+          zip -qr "$GITHUB_WORKSPACE/app/src/main/assets/model.zip" .
+          cd "$GITHUB_WORKSPACE"
+          test -s app/src/main/assets/model.zip
+          unzip -l app/src/main/assets/model.zip | head -20
+          echo "Offline model ZIP created."
 
       - name: Build Friday APK
         run: gradle assembleDebug
