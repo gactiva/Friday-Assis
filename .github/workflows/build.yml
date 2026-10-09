@@ -3,9 +3,10 @@ name: Build Friday Android APK
 
 on:
   workflow_dispatch:
-
-permissions:
-  contents: read
+  push:
+    paths:
+      - '**.zip'
+      - '.github/workflows/build.yml'
 
 jobs:
   build:
@@ -20,6 +21,18 @@ jobs:
           cp -a project/. .
           rm -rf project
 
+      - name: Download offline English speech model
+        run: |
+          mkdir -p app/src/main/assets
+          curl -L --fail --retry 3 \
+            https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip \
+            -o /tmp/vosk-model.zip
+          mkdir -p /tmp/vosk-model
+          unzip -q /tmp/vosk-model.zip -d /tmp/vosk-model
+          mv /tmp/vosk-model/vosk-model-small-en-us-0.15 \
+            app/src/main/assets/model
+          test -f app/src/main/assets/model/conf/model.conf
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -28,8 +41,6 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.2'
 
       - name: Build Friday APK
         run: gradle assembleDebug
@@ -38,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Friday-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
