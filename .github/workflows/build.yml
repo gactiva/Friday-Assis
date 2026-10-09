@@ -16,7 +16,7 @@ jobs:
 
       - name: Extract Friday project ZIP
         run: |
-          unzip FridayAssistantGitHubReady.zip -d project
+          unzip "FridayAssistantBackground (1).zip" -d project
           cp -a project/. .
           rm -rf project
 
