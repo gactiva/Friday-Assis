@@ -15,7 +15,7 @@ jobs:
 
       - name: Extract project
         run: |
-          unzip -o FridayAssistantBackground (1).zip -d project
+          unzip -o "FridayAssistantBackground (1).zip" -d project          
           cp -a project/. .
           rm -rf project
 
