@@ -15,7 +15,7 @@ jobs:
 
       - name: Extract project
         run: |
-          unzip -o "FridayAssistantNext16.zip" -d project          
+          unzip -o "FridayAssistantNext16_FIXED.zip" -d project          
           cp -a project/. .
           rm -rf project
 
